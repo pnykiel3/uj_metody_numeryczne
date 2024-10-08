@@ -29,8 +29,8 @@ def wykres(x, hs, dtype=np.float32):
 
     dokladna = df(x)
 
-    tablicA1 = []
-    tablicB1 = []
+    wynikA = []
+    wynikB = []
 
     for h in hs:
         dfA = wzA(x, h)
@@ -39,13 +39,13 @@ def wykres(x, hs, dtype=np.float32):
         bladA = blad(dfA, dokladna)
         bladB = blad(dfB, dokladna)
 
-        tablicA1.append(bladA)
-        tablicB1.append(bladB)
+        wynikA.append(bladA)
+        wynikB.append(bladB)
 
     # wykres błędów
     plt.figure(figsize=(12.8,7.2))
-    plt.loglog(hs, tablicA1, label=f'Błąd (a), dtype={dtype.__name__}', marker='o')
-    plt.loglog(hs, tablicB1, label=f'Błąd (b), dtype={dtype.__name__}', marker='x')
+    plt.loglog(hs, wynikA, label=f'Błąd (a), dtype={dtype.__name__}', marker='o')
+    plt.loglog(hs, wynikB, label=f'Błąd (b), dtype={dtype.__name__}', marker='x')
 
     plt.xlabel('h')
     plt.ylabel('|Dh_f(x) - f\'(x)|')
