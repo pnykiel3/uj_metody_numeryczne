@@ -1,6 +1,9 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
+# double czyli float 64 -16 do 0
+# float -7 do 0
+
 # f(x) = sin(x^3)
 def f(x):
     return np.sin(x**3)
@@ -21,47 +24,49 @@ def wzB(x, h):
 def blad(przyblizona, dokladna):
     return np.abs(przyblizona - dokladna)
 
-# funkcja rysująca wykres błędów
-def wykres(x, hs, dtype=np.float32):
-
-    # konwersja dla zmiennoprzecinkowych
-    hs = hs.astype(dtype)
-
-    dokladna = df(x)
-
+def liczenie(x, hs, df):
     wynikA = []
     wynikB = []
 
     for h in hs:
-        dfA = wzA(x, h)
-        dfB = wzB(x, h)
 
-        bladA = blad(dfA, dokladna)
-        bladB = blad(dfB, dokladna)
+        # szacowanych wynikow
+        szacowaneA = wzA(x, h)
+        szaconaneB = wzB(x, h)
+
+        # błędy
+        bladA = np.abs(szacowaneA - df(x))
+        bladB = np.abs(szaconaneB - df(x))
 
         wynikA.append(bladA)
         wynikB.append(bladB)
 
-    # wykres błędów
-    plt.figure(figsize=(12.8,7.2))
-    plt.loglog(hs, wynikA, label=f'Błąd (a), dtype={dtype.__name__}', marker='o')
-    plt.loglog(hs, wynikB, label=f'Błąd (b), dtype={dtype.__name__}', marker='x')
-
-    plt.xlabel('h')
-    plt.ylabel('|Dh_f(x) - f\'(x)|')
-    plt.title(f'Błąd w stosunku do h dla f(x) = sin(x^3), x = {x}')
-    plt.legend()
-    plt.grid(True, which="both", ls = "--")
-    plt.show()
-
-# test dla różnych wartości h i typów zmiennoprzecinkowych
-hs = np.logspace(-16, 0, 100)
+    return wynikA, wynikB
 
 # punkt do badania pochodnej
 x = 0.2
 
-# wykres dla float32
-wykres(x, hs, dtype=np.float32)
+hs32 = np.logspace(-7, 0, 128)
+bladA32, bladB32 = liczenie(x, hs32, df)
+hs64 = np.logspace(-16, 0, 256)
+bladA64, bladB64 = liczenie(x, hs64, df)
 
-# wykres dla float64
-wykres(x, hs, dtype=np.float64)
+    # wykres błędów
+plt.figure(figsize=(12.8,7.2))
+plt.loglog(hs32, bladA32, label=f'Błąd (a) float32', marker='o')
+plt.loglog(hs32, bladB32, label=f'Błąd (b) float32', marker='x')
+plt.xlabel('h')
+plt.ylabel('|Dh_f(x) - f\'(x)|')
+plt.title(f'Błąd w stosunku do h dla f(x) = sin(x^3), x = {x}')
+plt.legend()
+plt.grid()
+
+plt.figure(figsize=(12.8,7.2))
+plt.loglog(hs64, bladA64, label=f'Błąd (a) float64', marker='o')
+plt.loglog(hs64, bladB64, label=f'Błąd (b) float64', marker='x')
+plt.xlabel('h')
+plt.ylabel('|Dh_f(x) - f\'(x)|')
+plt.title(f'Błąd w stosunku do h dla f(x) = sin(x^3), x = {x}')
+plt.legend()
+plt.grid(True, which="both", ls = "--")
+plt.show()
