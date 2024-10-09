@@ -20,23 +20,14 @@ def wzA(x, h):
 def wzB(x, h):
     return (f(x + h) - f(x - h)) / (2 * h)
 
-# wzór na błąd
-def blad(przyblizona, dokladna):
-    return np.abs(przyblizona - dokladna)
-
-def liczenie(x, hs, df):
+def liczenie(x, hs):
     wynikA = []
     wynikB = []
 
     for h in hs:
-
-        # szacowanych wynikow
-        szacowaneA = wzA(x, h)
-        szaconaneB = wzB(x, h)
-
-        # błędy
-        bladA = np.abs(szacowaneA - df(x))
-        bladB = np.abs(szaconaneB - df(x))
+        #błąd to bezwzględna różnica wartości przybliżonej od wartości dokładnej
+        bladA = np.abs(wzA(x, h) - df(x))
+        bladB = np.abs(wzB(x, h) - df(x))
 
         wynikA.append(bladA)
         wynikB.append(bladB)
@@ -46,24 +37,25 @@ def liczenie(x, hs, df):
 # punkt do badania pochodnej
 x = 0.2
 
-hs32 = np.logspace(-7, 0, 128)
-bladA32, bladB32 = liczenie(x, hs32, df)
 hs64 = np.logspace(-16, 0, 256)
-bladA64, bladB64 = liczenie(x, hs64, df)
+#hs32 = np.logspace(-7, 0, 128)
+hs32 = hs64.astype(np.float32)
+bladA32, bladB32 = liczenie(x, hs32)
+bladA64, bladB64 = liczenie(x, hs64)
 
     # wykres błędów
-plt.figure(figsize=(12.8,7.2))
-plt.loglog(hs32, bladA32, label=f'Błąd (a) float32', marker='o')
-plt.loglog(hs32, bladB32, label=f'Błąd (b) float32', marker='x')
+plt.figure(figsize=(13,7))
+plt.loglog(hs32, bladA32, label=f'Błąd (a) float32')
+plt.loglog(hs32, bladB32, label=f'Błąd (b) float32')
 plt.xlabel('h')
 plt.ylabel('|Dh_f(x) - f\'(x)|')
 plt.title(f'Błąd w stosunku do h dla f(x) = sin(x^3), x = {x}')
 plt.legend()
 plt.grid()
 
-plt.figure(figsize=(12.8,7.2))
-plt.loglog(hs64, bladA64, label=f'Błąd (a) float64', marker='o')
-plt.loglog(hs64, bladB64, label=f'Błąd (b) float64', marker='x')
+plt.figure(figsize=(13,7))
+plt.loglog(hs64, bladA64, label=f'Błąd (a) float64')
+plt.loglog(hs64, bladB64, label=f'Błąd (b) float64')
 plt.xlabel('h')
 plt.ylabel('|Dh_f(x) - f\'(x)|')
 plt.title(f'Błąd w stosunku do h dla f(x) = sin(x^3), x = {x}')
