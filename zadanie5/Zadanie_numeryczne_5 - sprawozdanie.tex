@@ -1,0 +1,132 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc} % Obsługa polskich znaków w UTF-8
+\usepackage[T1]{fontenc}    % Ustawienie kodowania czcionki
+\usepackage[polish]{babel}  % Język polski
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{float} % Pakiet do wymuszania pozycji
+
+
+\title{Sprawozdanie z Zadania Numerycznego 5}
+\author{Paweł Nykiel}
+\date{Listopad 2024}
+
+\begin{document}
+
+\maketitle
+
+\section{Wprowadzenie}
+Cel zadania to przybliżone rozwiązanie układu równań liniowych używając dwóch metod iteracyjnych – Jacobiego oraz Gaussa-Seidela.
+Dla zadanej macierzy o rozmiarze \( N = 200 \) analizujemy dokładność i zbieżność obu metod dla różnych wartości \( d \) na diagonali
+i losowych wektorów startowych. Na wykresie rysujemy różnicę poniędzy dokładnym rozwiązaniem i przybliżeniem w kolejnych iteracjach
+dla obu metod.
+
+
+
+
+\section{Struktura Macierzy}
+Macierz \( A \) jest zdefiniowana jako:
+\[
+A = \begin{pmatrix}
+d & 0.5 & 0.1 & & &  \\
+0.5 & d & 0.5 & 0.1 & & \\
+0.1 & 0.5 & d & 0.5 & 0.1 & \\
+& \ddots & \ddots & \ddots & \ddots & \\
+& & 0.1 & 0.5 & d & 0.5 \\
+& & & 0.1 & 0.5 & d \\
+\end{pmatrix}
+\]
+gdzie \( d \) jest elementem diagonalnym. Wektor prawej strony \( b \) jest określony przez:
+\[
+b = \begin{pmatrix} 1 \\ 2 \\ 3 \\ \vdots \\ N \end{pmatrix}
+\]
+dla \( N = 200 \).
+
+\section{Metody}
+
+\subsection{Metoda Jacobiego}
+Metoda Jacobiego to iteracyjny algorytm, w którym każdy element wektora rozwiązania jest aktualizowany
+niezależnie na podstawie wartości z poprzedniej iteracji. Wzór iteracyjny zadany jest przez:
+\[
+x_i^{(k+1)} = \frac{1}{a_{ii}} \left(b_i - \sum_{j \neq i} a_{ij} x_j^{(k)} \right)
+\]
+gdzie \( x_i^{(k+1)} \) to zaktualizowana wartość \( x_i \) w kolejnej iteracji.
+
+\subsection{Metoda Gaussa-Seidla}
+Metoda Gaussa-Seidla jest bardzo podobna do metody Jacobiego, jednakże aktualizacje każdego elementu zachodzą
+sekwencyjnie w ramach tej samej iteracji, natychmiast korzystając z nowo obliczonych wartości. Wzór iteracyjny zadany jest przez:
+\[
+x_i^{(k+1)} = \frac{1}{a_{ii}} \left(b_i - \sum_{j < i} a_{ij} x_j^{(k+1)} - \sum_{j > i} a_{ij} x_j^{(k)} \right)
+\]
+
+\section{Implementacja}
+Zaimplementowano skrypt w Pythonie (`num5.py`), który wykorzystuje biblioteki `numpy` do operacji algebraicznych oraz `matplotlib` do tworzenia wykresów.
+Macierz \( A \) została zbudowana w taki sposób, aby generować tylko niezerowe elementy, optymalizując zużycie pamięci dla dużych wartości \( N \).
+
+\subsection{Kryterium Zbieżności}
+Dla obu metod zakładamy zbieżność, gdy różnica norm między wektorem rozwiązania kolejnych iteracji spada poniżej progu \(10^{-13}\).
+
+\section{Wyniki}
+
+% Wymuszenie umieszczenia wszystkich wykresów na początku sekcji
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1.2\textwidth]{myplot} % Główny wykres
+    \label{fig:main-plot}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \begin{minipage}{0.7\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{myplot121} % Pomniejszony wykres 1
+        \label{fig:plot1}
+    \end{minipage}
+    \hfill
+    \begin{minipage}{0.7\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{myplot124} % Pomniejszony wykres 2
+        \label{fig:plot2}
+    \end{minipage}
+    \begin{minipage}{0.7\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{myplot13} % Pomniejszony wykres 1
+        \label{fig:plot3}
+    \end{minipage}
+    \hfill
+\end{figure}
+
+
+\begin{itemize}
+
+    \item \textbf{Warunki początkowe}: Dla zadanych wartości elementów diagonalnych \( d \) metoda była uruchamiana z losowym wektorem startowym,
+    niezależnie generowanym dla każdego przypadku testowego. W ten sposób zbadaliśmy wpływ wartości początkowych na zbieżność metod iteracyjnych.
+    \item \textbf{Graficzna Reprezentacja}:
+    Wykresy przedstawiają normę różnicy między bieżącym przybliżeniem a dokładnym rozwiązaniem dla każdej iteracji oraz dla różnych wartości elementu \( d \) na diagonali.
+    Umożliwia to wizualne porównanie tempa zbieżności metod Jacobiego i Gaussa-Seidla.
+    \item \item \textbf{Zbieżność i Porównanie}:
+    \begin{itemize}
+        \item \textbf{Metoda Jacobiego}: Zazwyczaj wymaga więcej iteracji niż metoda Gaussa-Seidla, aby osiągnąć zbieżność.
+         Wizualizacje pokazują stopniowe, liniowe zmniejszanie się błędu wraz z kolejnymi iteracjami.
+        \item \textbf{Metoda Gaussa-Seidla}: Zbiega szybciej dzięki natychmiastowej aktualizacji elementów wektora,
+         często wymagaja mniej iteracji niż metoda Jacobiego.
+    \end{itemize}
+    \item \textbf{Wpływ Parametru \( d \)}:
+    Wartość \( d \) wpływa na tempo zbieżności. Gdy \( d \) jest zbyt małe, a w szczególności gdy zbliża się do 1.2,
+    metoda Jacobiego napotyka trudności ze zbieżnością. W ogólności jednak, obie metody zbiegają szybciej dla większych wartości \( d \).
+\end{itemize}
+
+\section{Dyskusja}
+Metoda Gaussa-Seidla zazwyczaj zbiega szybciej niż metoda Jacobiego, co nie znaczy, że metoda Jacobiego jest nieskuteczna.
+Dla określonych struktur macierzy i punktów startowych metoda Jacobiego może być dobrą alternatywą.
+Dla obu metod zbieżność jest gwarantowana przy odpowiednio dobranym parametrze \( d \). Musi on spełniać warunek stworzenia macierzy przekątniowo dominującej.
+Widzimy, że dla wartości \( d \) bliskich 1.2 metoda Jacobiego zaczyna napotykać trudności ze zbieżnością, co jest zgodne z oczekiwaniami.
+
+
+\section{Wnioski}
+Dokument przedstawia metody iteracyjne oraz ich skuteczność w rozwiązywaniu układów równań.
+Metoda Gaussa-Seidla zazwyczaj osiąga zbieżność przy mniejszej liczbie iteracji niż metoda Jacobiego.
+Zatem w sytuacjach, gdy zależy nam na szybkości zbieżności oraz efektywności obliczeniowej, metoda Gaussa-Seidla jest lepszym wyborem.
+Jednakże, dla podanej struktury macierzy obie metody zbiegają, pod warunkiem, że macierz jest przekątniowo dominująca.
+
+\end{document}

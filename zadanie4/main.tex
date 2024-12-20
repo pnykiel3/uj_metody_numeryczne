@@ -1,0 +1,230 @@
+\documentclass[a4paper,12pt]{article}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{float}
+\usepackage{xcolor}
+\usepackage{graphicx}
+\usepackage{mathtools}
+\usepackage{listings}
+\usepackage{booktabs}
+\usepackage{geometry}
+\geometry{margin=1in}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{polski}
+
+\lstset{
+    language=Python,
+    basicstyle=\ttfamily\small,
+    keywordstyle=\bfseries\color{blue},
+    commentstyle=\itshape\color{green!40!black},
+    stringstyle=\color{orange},
+    numbers=left,
+    numberstyle=\tiny\color{gray},
+    stepnumber=1,
+    numbersep=10pt,
+    backgroundcolor=\color{gray!10},
+    frame=single,
+    breaklines=true,
+    captionpos=b,
+    extendedchars=true,
+    literate={ą}{{\k{a}}}1 {ć}{{\'c}}1 {ę}{{\k{e}}}1 {ł}{{\l{}}}1 {ń}{{\'n}}1 {ó}{{\'o}}1 {ś}{{\'s}}1 {ź}{{\'z}}1 {ż}{{\.z}}1
+}
+
+\begin{document}
+
+\title{Sprawozdanie z zadania numerycznego NUM4}
+\author{Paweł Nykiel}
+\date{Listopad 2024}
+
+\maketitle
+
+\section{Polecenie}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=1.1\textwidth]{num4.png} % Wstawienie obrazu; dostosuj szerokość
+    \label{fig:example-image}
+\end{figure}
+
+
+
+\section{Wprowadzenie}
+Wzór Shermana-Morrisona jest przydatnym narzędziem w rozwiązywaniu układów równań liniowych z macierzami rzadkimi. Jest szczególnie efektywny, gdy dana macierz jest modyfikacją macierzy prostszej, jak macierz jednostkowa lub przekątniowa, co pozwala na szybkie obliczenie odwrotności. Wzór ten może być zastosowany do przybliżonego rozwiązania układów liniowych w zadaniach, gdzie macierze posiadają niewiele niezerowych elementów.
+
+
+
+
+\section{Wstęp teoretyczny}
+
+W zadaniu tym rozważamy problem efektywnego rozwiązywania układu równań \( Ay = b \), gdzie macierz \( A \) jest w dużym stopniu rzadką macierzą. W przypadku macierzy rzadkich, które mają niewiele niezerowych elementów, operacje takie jak odwracanie macierzy można uprościć, co pozwala uzyskać rozwiązania przy niższej złożoności obliczeniowej.
+
+\subsection{Macierz rzadka}
+Macierz rzadka to macierz, w której większość elementów jest równa zeru. Takie macierze są często spotykane w zagadnieniach numerycznych, gdzie tylko niektóre elementy są istotne dla rozwiązywanego problemu. W praktyce macierze rzadkie są reprezentowane za pomocą specjalnych struktur danych, aby zoptymalizować pamięć i czas obliczeń. W naszym przypadku macierz \( A \) jest modyfikacją macierzy diagonalnej, gdzie elementy głównej przekątnej wynoszą 5, elementy bezpośrednio nad przekątną wynoszą 3, a pozostałe elementy są równe 1. 
+
+\subsection{Wzór Sherman-Morrisona}
+Wzór Sherman-Morrisona jest użyteczny przy obliczaniu odwrotności macierzy, która jest modyfikacją innej macierzy o znanej odwrotności. Zakładając, że macierz \( A \) można zapisać jako:
+\[
+A = B + uv^T
+\]
+gdzie \( B \) jest macierzą o znanej odwrotności, a \( u \) i \( v \) są wektorami, wzór Sherman-Morrisona pozwala wyrazić odwrotność macierzy \( A \) w postaci:
+\[
+(A)^{-1} = (B + uv^T)^{-1} = B^{-1} - \frac{B^{-1} u v^T B^{-1}}{1 + v^T B^{-1} u}
+\]
+W ten sposób można szybko wyznaczyć odwrotność macierzy \( A \), unikając kosztownej pełnej inwersji.
+
+\subsection{Zastosowanie wzoru w rozwiązaniu zadania}
+W zadaniu \( Ay = b \) możemy zastosować wzór Sherman-Morrisona, zapisując równanie jako:
+\[
+y = (B + uv^T)^{-1} b = B^{-1}b - \frac{B^{-1} u (v^T B^{-1} b)}{1 + v^T B^{-1} u}
+\]
+Definiujemy teraz:
+\[
+z = B^{-1} b \quad \text{oraz} \quad z' = B^{-1} u
+\]
+co pozwala zapisać rozwiązanie w postaci:
+\[
+y = z - \frac{z' (v^T z)}{1 + v^T z'}
+\]
+Aby rozwiązać zadanie, wystarczy więc rozwiązać dwa układy równań:
+\[
+B z = b \quad \text{oraz} \quad B z' = u
+\]
+Ze względu na strukturę macierzy \( B \), która jest macierzą trójkątną górną, oba układy można rozwiązać metodą podstawiania wstecznego (backward substitution), co dodatkowo obniża złożoność obliczeniową do \( O(n) \).
+
+\subsection{Złożoność obliczeniowa}
+Dzięki wykorzystaniu wzoru Sherman-Morrisona oraz właściwości macierzy rzadkich, rozwiązanie układu równań \( Ay = b \) osiąga złożoność obliczeniową rzędu \( O(n) \), co jest znacznie bardziej efektywne niż standardowe metody dla pełnych macierzy. Wykorzystanie tej metody jest szczególnie korzystne dla dużych macierzy, gdzie optymalizacja czasu obliczeń ma kluczowe znaczenie.
+
+
+
+\section{Założenia i Dane}
+Rozważamy macierz \( A \), gdzie:
+\[
+A_{ii} = 5, \quad A_{i, i+1} = 3, \quad A_{i, j} = 1 \text{ dla pozostałych elementów}
+\]
+Wektor \( b \):
+\[
+b = \begin{bmatrix} 2 \\ 2 \\ \vdots \\ 2 \end{bmatrix}
+\]
+
+
+\section{Wyniki}
+Obliczony wektor \( y \):
+
+$y$ = [0.015579357351509254, 0.015579357351509254, 0.015579357351509254, 0.015579357351509254, 0.015579357351509254, 0.015579357351509254, 0.015579357351509254, 0.015579357351509254, 0.015579357351509254, 0.015579357351509254, 0.015579357351509254, 0.015579357351509254, 0.015579357351509254, 0.015579357351509254, 0.015579357351509254, 0.015579357351509254, 0.015579357351509254, 0.015579357351509254, 0.015579357351509254, 0.015579357351509254, 0.015579357351509254, 0.015579357351509254, 0.015579357351509254, 0.015579357351509254, 0.015579357351509254, 0.015579357351509254, 0.015579357351509254, 0.015579357351509254, 0.015579357351509254, 0.015579357351509254, 0.015579357351509254, 0.015579357351509254, 0.015579357351509254, 0.015579357351509254, 0.015579357351509254, 0.015579357351509254, 0.015579357351509254, 0.015579357351509254, 0.015579357351509254, 0.015579357351509254, 0.015579357351509254, 0.015579357351509254, 0.015579357351509254, 0.015579357351509254, 0.015579357351509254, 0.015579357351509254, 0.015579357351509254, 0.015579357351509254, 0.015579357351509254, 0.015579357351509254, 0.015579357351509254, 0.015579357351509254, 0.015579357351509254, 0.015579357351509282, 0.015579357351509227, 0.01557935735150931, 0.015579357351509171, 0.01557935735150942, 0.015579357351508977, 0.015579357351509698, 0.015579357351508505, 0.015579357351510531, 0.015579357351507145, 0.01557935735151278, 0.01557935735150337, 0.015579357351519052, 0.015579357351492934, 0.015579357351536455, 0.01557935735146393, 0.015579357351584805, 0.015579357351383327, 0.015579357351719142, 0.01557935735115945, 0.015579357352092232, 0.015579357350537615, 0.015579357353128653, 0.015579357348810247, 0.0155793573560076, 0.015579357344012001, 0.015579357364004676, 0.015579357330683552, 0.01557935738621874, 0.015579357293660084, 0.015579357447924519, 0.015579357190817156, 0.015579357619329437, 0.015579356905142283, 0.015579358095454215, 0.015579356111600995, 0.01557935941802302, 0.015579353907319654, 0.015579363091825255, 0.015579347784315939, 0.015579373296831456, 0.015579330775972233, 0.015579401644070928, 0.015579283530573113, 0.015579480386402805, 0.015579152293353327, 0.015579699115102486, 0.015578787745520545, 0.01558030669482377, 0.01557777511265171, 0.01558199441627181, 0.015574962243571633, 0.015586682531405271, 0.015567148718349216, 0.01559970507344266, 0.015545444481620263, 0.01563587880132425, 0.01548515493515093, 0.015736361378773128, 0.01531768397273614, 0.016015479649464454, 0.014852486854917246, 0.01679080817916262, 0.013560272638753645, 0.01894449853943525, 0.009970788704965927, 0.024926971762414818]
+\\
+\\
+\\
+
+\Large\textbf {{Porówanie roziwązań z funkcją biblioteczną:}}
+\\
+\large {Różnica między funkcją własną a biblioteczną numpy}
+\\
+\\
+
+\normalsize 
+$\Delta y$ = [ 8.67361738e-18  1.37043155e-16  0.00000000e+00  1.28369537e-16
+  1.00613962e-16 -3.46944695e-18  5.37764278e-17  6.76542156e-17
+  1.21430643e-17  6.93889390e-17  1.21430643e-17  2.25514052e-17
+ -6.93889390e-18  6.24500451e-17  2.08166817e-17  1.56125113e-17
+  8.67361738e-18  3.29597460e-17  1.21430643e-17  2.25514052e-17
+ -3.29597460e-17  4.33680869e-17 -2.25514052e-17  1.38777878e-17
+ -3.46944695e-18 -2.77555756e-17  3.81639165e-17 -5.37764278e-17
+  5.20417043e-18 -8.67361738e-18 -6.93889390e-18 -5.03069808e-17
+ -2.08166817e-17 -1.04083409e-17 -4.85722573e-17 -5.20417043e-18
+ -3.12250226e-17 -3.81639165e-17 -1.73472348e-18 -2.94902991e-17
+ -1.90819582e-17 -2.08166817e-17 -3.46944695e-18 -4.33680869e-17
+ -1.73472348e-17 -6.93889390e-18 -3.98986399e-17  5.20417043e-18
+ -3.81639165e-17 -3.12250226e-17 -3.12250226e-17 -5.55111512e-17
+ -8.67361738e-18 -2.25514052e-17 -2.77555756e-17 -3.64291930e-17
+  1.21430643e-17 -4.33680869e-17 -5.20417043e-17 -2.25514052e-17
+ -1.38777878e-17 -4.16333634e-17  5.20417043e-18 -5.55111512e-17
+ -1.38777878e-17  3.81639165e-17 -1.21430643e-17  8.67361738e-18
+ -1.73472348e-18  3.46944695e-17  3.46944695e-18 -3.46944695e-18
+  1.38777878e-17 -5.20417043e-18  2.42861287e-17 -1.56125113e-17
+  2.94902991e-17  5.20417043e-18  6.93889390e-18  1.04083409e-17
+ -8.67361738e-18  2.77555756e-17 -2.25514052e-17  1.04083409e-17
+  3.12250226e-17 -1.90819582e-17  3.81639165e-17 -3.46944695e-18
+  6.93889390e-18  1.56125113e-17  8.67361738e-18  2.60208521e-17
+  5.20417043e-18  1.56125113e-17  3.46944695e-18 -1.38777878e-17
+  1.38777878e-17  1.73472348e-18  1.73472348e-17  6.93889390e-18
+  1.73472348e-17 -6.93889390e-18  1.73472348e-18 -8.67361738e-18
+ -1.21430643e-17  3.46944695e-18  0.00000000e+00  1.21430643e-17
+  1.73472348e-18  1.73472348e-17  1.73472348e-18 -3.46944695e-18
+  2.94902991e-17 -2.77555756e-17  3.46944695e-17 -2.77555756e-17
+  4.85722573e-17  3.81639165e-17  2.42861287e-17  5.55111512e-17]
+\\
+\\
+\\
+\\
+\\
+\\
+\\
+\\
+\\
+\\
+\\\\\\
+\\
+
+\Large\textbf {{{Przykładowe czasy wykonania dla różnych wartości $n$:}}}
+
+\begin{table}[h!]
+\centering
+\begin{tabular}{ccc}
+\toprule
+\( n \) & Czas wykonania własnej funkcji [s] & Czas wykonania funkcji znumpy [s]\\
+\midrule
+100  & 2.55107e-05 & 0.000109434\\
+550  & 0.000128984 & 0.005423069\\
+1900 & 0.000479459 & 0.110186100\\
+2800 & 0.000690460 & 0.342638969\\
+4600 & 0.001164197 & 1.320746660\\
+7300 & 0.001846313 & 4.797127485\\
+9100 & 0.002322912 & 8.852895975\\
+
+
+\bottomrule
+\end{tabular}
+\caption{Porównanie czasów wykonania dla różnych wartości n}
+\end{table}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{myplot.png}
+    \caption{Wykres zależności czasu rozwiązania od rozmiaru macierzy N.}
+    \label{fig:example-image1}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{myplot1.png}
+    \caption{Porównanie wykresów dla funkcji własnej (niebieski wykres) oraz funkcji bibliotecznej (pomarańczowy wykres).}
+    \label{fig:example-image2}
+\end{figure}
+
+\\
+\\
+\\
+
+
+
+\\
+\\
+\\
+\\
+\large
+\section{Wnioski}
+
+
+\normalsize 
+\begin{enumerate}
+    \item \textbf{Poprawność implementacji:} Własna implementacja metody Sherman-Morrisona dobrze aproksymuje wynik, co potwierdza porównanie różnic między rozwiązaniami własnej funkcji a \texttt{numpy}. Uzyskane różnice są minimalne i mieszczą się w zakresie błędów numerycznych, co świadczy o poprawności algorytmu.
+
+    \item \textbf{Efektywność metody Sherman-Morrisona:} Dla większych wymiarów macierzy czas rozwiązania przy pomocy tej metody wzrasta w sposób zauważalny, co zostało przedstawione na wykresie. Wartość czasowa rośnie niemal liniowo wraz z rozmiarem macierzy, co odpowiada oczekiwaniom i potwierdza efektywność metody w przypadku dużych, rzadkich macierzy. Czas wykonania funkcji własnej ( O(n) ) jest o wiele niższy niż czas wykonania funkcji bibliotecznej.
+
+    \item \textbf{Zastosowanie metody:} Metoda Sherman-Morrisona jest szczególnie przydatna w przypadkach macierzy rzadkich lub macierzy, które są modyfikacją prostszej macierzy, jaką jest macierz przekątniowa. Pozwala ona zminimalizować obciążenie obliczeniowe w porównaniu z metodami ogólnymi, co czyni ją korzystnym wyborem w przypadku dużych rozmiarów macierzy.
+
+    \item \textbf{Potencjalne zastosowania:} Ze względu na swoją wydajność metoda może być używana w zadaniach wymagających szybkich obliczeń z dużymi macierzami rzadkimi, np. w analizie danych lub symulacjach numerycznych.
+\end{enumerate}
+
+\end{document}
